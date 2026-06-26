@@ -3,10 +3,6 @@ from pyspark.sql import functions as F
 
 spark = SparkSession.builder \
     .appName("taxi-bronze-to-silver") \
-    .config("spark.hadoop.fs.s3a.endpoint", "http://minio:9000") \
-    .config("spark.hadoop.fs.s3a.access.key", "admin") \
-    .config("spark.hadoop.fs.s3a.secret.key", "password") \
-    .config("spark.hadoop.fs.s3a.path.style.access", "true") \
     .getOrCreate()
 
 df = spark.read.parquet("s3a://bronze/taxi/yellow/*/*/data.parquet")

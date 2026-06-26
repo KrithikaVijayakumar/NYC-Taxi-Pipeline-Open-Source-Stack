@@ -46,6 +46,8 @@ services:
     volumes:
       - ./dags:/opt/airflow/dags
       - ./ingestion:/opt/airflow/ingestion
+      - ./transformations:/opt/airflow/transformations
+      - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "8081:8080"
     command: standalone

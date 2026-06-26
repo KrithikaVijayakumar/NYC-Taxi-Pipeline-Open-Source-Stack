@@ -1,0 +1,6 @@
+nyc_taxi: 
+  target: dev 
+  outputs: 
+    dev: 
+      type: duckdb 
+      path: /tmp/taxi.duckdb 

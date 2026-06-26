@@ -1,0 +1,1 @@
+select lpep_pickup_datetime::date as trip_date, count(*) as total_trips, sum(total_amount) as total_revenue, avg(total_amount) as avg_fare from read_parquet(["/tmp/silver.parquet"]) group by 1 order by 1
