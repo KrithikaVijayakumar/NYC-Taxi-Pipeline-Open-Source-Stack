@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.insert(0, '/opt/airflow')
+
 from airflow.decorators import dag, task
 from datetime import datetime
 
