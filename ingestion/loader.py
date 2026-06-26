@@ -5,7 +5,7 @@ from pathlib import Path
 def get_minio_client():
     return boto3.client(
         "s3",
-        endpoint_url="http://localhost:9000",
+        endpoint_url="http://minio:9000",
         aws_access_key_id="admin",
         aws_secret_access_key="password",
         config=Config(signature_version="s3v4"),

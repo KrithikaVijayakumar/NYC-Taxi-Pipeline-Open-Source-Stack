@@ -1,5 +1,4 @@
 import sys
-import os
 sys.path.insert(0, '/opt/airflow')
 
 from airflow.decorators import dag, task
@@ -14,24 +13,25 @@ from datetime import datetime
 def nyc_taxi_pipeline():
 
     @task()
-    def ingest_bronze(**context):
+    def ingest_bronze():
         from ingestion.taxi_client import TaxiClient
         from ingestion.loader import load_to_bronze
 
-        year = context["data_interval_start"].year
-        month = context["data_interval_start"].month
+        year = 2023
+        month = 1
 
         client = TaxiClient()
-        path = client.download("yellow", year, month)
-        load_to_bronze(path, "yellow", year, month)
+        path = client.download("green", year, month)
+        load_to_bronze(path, "green", year, month)
 
     @task()
     def transform_silver():
         import subprocess
         subprocess.run([
-            "spark-submit",
+            "docker", "exec", "nyc-taxi-pipeline-spark-1",
+            "/opt/spark/bin/spark-submit",
             "--master", "spark://spark:7077",
-            "transformations/spark_jobs/bronze_to_silver.py"
+            "/opt/spark/transformations/spark_jobs/bronze_to_silver.py"
         ], check=True)
 
     @task()
@@ -44,4 +44,4 @@ def nyc_taxi_pipeline():
 
     ingest_bronze() >> transform_silver() >> run_dbt()
 
-dag = nyc_taxi_pipeline()
+nyc_taxi_pipeline()
