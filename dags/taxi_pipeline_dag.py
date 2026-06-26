@@ -63,6 +63,7 @@ def nyc_taxi_pipeline():
 
         # Filter outliers
         df = df[df["trip_duration_min"].between(1, 180)]
+        df = df[df["trip_distance"].between(0, 100)]
 
         # Write to silver
         buffer = io.BytesIO()
@@ -78,6 +79,13 @@ def nyc_taxi_pipeline():
         df.to_parquet("/tmp/silver.parquet", index=False)
         print(f"✅ Silver complete: {len(df):,} rows")
     @task()
+    def quality_checks():
+        import sys
+        sys.path.insert(0, '/opt/airflow')
+        from quality.run_checks import validate_silver
+        validate_silver()
+
+    @task()
     def run_dbt():
         import subprocess
         subprocess.run(
@@ -87,6 +95,6 @@ def nyc_taxi_pipeline():
             check=True
         )
 
-    ingest_bronze() >> transform_silver() >> run_dbt()
+    ingest_bronze() >> transform_silver() >> quality_checks() >> run_dbt()
 
 nyc_taxi_pipeline()
